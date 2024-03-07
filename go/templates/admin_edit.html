@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit User</title>
+</head>
+<body>
+  <h1>Edit User</h1>
+
+  <form id="editUserForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" required value="{{.Username}}"><br>
+    
+    <label for="email">Email:</label>
+    <input type="email" id="email" required value="{{.Email}}"><br>
+    <input type="submit" value="Update">
+  </form>
+
+  <a href="/admin">Back to Admin Page</a>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+  const userId = getUserIdFromUrl(); 
+  fetch(`/user/${userId}`)
+    .then((response) => response.json())
+    .then((user) => {
+      document.getElementById("username").value = user.username;
+      document.getElementById("email").value = user.email;
+    })
+    .catch((error) => console.error("Error:", error));
+
+  document.getElementById("editUserForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    editUser(userId);
+  });
+});
+
+function editUser(userId) {
+  const username = document.getElementById("username").value;
+  const email = document.getElementById("email").value;
+
+  fetch(`/admin/edit/${userId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: username,
+      email: email,
+    }),
+  })
+    .then((response) => {
+      console.log("Response status:", response.status);
+      if (response.status === 200) {
+        window.location.href = "/admin";
+      }
+    })
+    .catch((error) => console.error("Error:", error));
+}
+
+function getUserIdFromUrl() {
+  const parts = window.location.pathname.split('/');
+  return parts[parts.length - 1];
+}
+  </script>
+</body>
+</html>

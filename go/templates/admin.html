@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Page</title>
+</head>
+<body>
+  <h1>Admin Page</h1>
+
+  <ul>
+    {{range .Users}}
+    <li>
+      <strong>{{.Username}}</strong> - {{.Email}}
+      <a href="/admin/edit/{{.ID}}">Edit</a>
+      <a href="#" class="deleteUser" data-id="{{.ID}}">Delete</a>
+    </li>
+    {{end}}
+  </ul>
+
+  <a href="/admin/add">Add New User</a>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("deleteUser")) {
+      e.preventDefault();
+      const userId = e.target.getAttribute("data-id");
+      deleteUser(userId);
+    }
+  });
+});
+
+function deleteUser(userId) {
+  fetch(`/delete/${userId}`, {
+    method: "DELETE",
+  })
+    .then((response) => {
+      console.log("Response status:", response.status);
+      if (response.status === 200) {
+        window.location.reload();
+      }
+    })
+    .catch((error) => console.error("Error:", error));
+}
+</script>
+</html>
